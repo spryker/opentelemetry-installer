@@ -53,9 +53,9 @@ jq 'if .autoload.files == null then .autoload.files = [] else . end' composer.js
 # Ensure 'autoload."psr-4"' exists and is an object
 jq 'if .autoload."psr-4" == null then .autoload."psr-4" = {} else . end' composer.json > composer.json.tmp && mv composer.json.tmp composer.json
 
-if ! jq -e '.autoload.files | any(. == "otel_autoload.php")' composer.json > /dev/null; then
+if ! jq -e '.autoload.files | any(. == "otel-autoload.php")' composer.json > /dev/null; then
   # If not present, add it
-  jq '.autoload.files += ["otel_autoload.php"]' composer.json > composer.json.tmp && mv composer.json.tmp composer.json
+  jq '.autoload.files += ["otel-autoload.php"]' composer.json > composer.json.tmp && mv composer.json.tmp composer.json
 fi
 
 # Check if PSR-4 autoload entries already exist
