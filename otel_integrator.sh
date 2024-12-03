@@ -134,8 +134,8 @@ fi
 if [ -f "src/$project_namespace/Zed/Console/ConsoleDependencyProvider.php" ]; then
     # If the file exists, attempt to append the code to the $commands array
     if ! grep -q "OpentelemetryGeneratorConsole" "src/$project_namespace/Zed/Console/ConsoleDependencyProvider.php"; then
-            sed -i '' '/$commands = \[/a\
-            \new OpentelemetryGeneratorConsole(),
+            sed -i '/$commands = \[/a\
+            new OpentelemetryGeneratorConsole(),
             ' "src/$project_namespace/Zed/Console/ConsoleDependencyProvider.php"
 
             # Add the use statement if it doesn't already exist
