@@ -140,7 +140,7 @@ if [ -f "src/$project_namespace/Zed/Console/ConsoleDependencyProvider.php" ]; th
 
             # Add the use statement if it doesn't already exist
             if ! grep -q "use Spryker\\Zed\\Opentelemetry\\Communication\\Plugin\\Console\\OpentelemetryGeneratorConsole;" "src/$project_namespace/Zed/Console/ConsoleDependencyProvider.php"; then
-                sed -i '' "
+                sed -i "
                 /^namespace ${project_namespace//\\/\\\\}\\\\Zed\\\\Console;/a\\
 use Spryker\\\\Zed\\\\Opentelemetry\\\\Communication\\\\Plugin\\\\Console\\\\OpentelemetryGeneratorConsole;" "src/$project_namespace/Zed/Console/ConsoleDependencyProvider.php"
             fi
