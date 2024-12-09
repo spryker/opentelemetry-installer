@@ -4,68 +4,27 @@
 
 project_namespace=${1:-Pyz}
 
-wget https://raw.githubusercontent.com/spryker/opentelemetry/master/otel-autoload-example.php -O otel-autoload.php
+# Path to the target YAML file
+DEPLOY_FILE=${2:-"deploy.yml"}
 
-dependencies=(
-  "open-telemetry/sdk:^1.0"
-  "ext-opentelemetry:*"
-  "mismatch/opentelemetry-auto-redis:^0.3.0"
-  "open-telemetry/exporter-otlp:^1.0"
-  "open-telemetry/gen-otlp-protobuf:^1.1"
-  "open-telemetry/opentelemetry-auto-guzzle:^0.0.2"
-  "spryker/monitoring:^2.8.0"
-  "open-telemetry/transport-grpc:^1.0"
-  "ext-grpc:*"
-  "spryker/opentelemetry:^0.1.1"
-  "spryker/otel-backoffice-application-instrumentation:^0.1.1"
-  "spryker/otel-console-instrumentation:^0.1.1"
-  "spryker/otel-elastica-instrumentation:^0.1.0"
-  "spryker/otel-rabbit-mq-instrumentation:^0.1.0"
-  "spryker/otel-propel-instrumentation:^0.1.0"
-  "spryker/otel-application-instrumentation:^0.1.1"
-)
-
-if [ -f vendor/spryker/spryker/Bundles/GlueApplication/src/Spryker/Glue/GlueApplication/Bootstrap/GlueBootstrap.php ] || [ -f vendor/spryker/glue-application/src/Spryker/Glue/GlueApplication/Bootstrap/GlueBootstrap.php ] || [ -f "src/$project_namespace/Glue/GlueApplication/Bootstrap/GlueBootstrap.php" ]; then
-  dependencies+=("spryker/otel-glue-application-instrumentation:^0.1.0")
+# Check if the file exists
+if [[ ! -f "$DEPLOY_FILE" ]]; then
+  echo "Error: File $DEPLOY_FILE does not exist."
+  exit 1
 fi
 
-if [ -f vendor/spryker/spryker/Bundles/MerchantPortalApplication/src/Spryker/Zed/MerchantPortalApplication/Communication/Bootstrap/MerchantPortalBootstrap.php ] || [ -f vendor/spryker/merchant-portal-application/src/Spryker/Zed/MerchantPortalApplication/Communication/Bootstrap/MerchantPortalBootstrap.php ] || [ -f "src/$project_namespace/Zed/MerchantPortalApplication/Communication/Bootstrap/MerchantPortalBootstrap.php" ]; then
-    dependencies+=("spryker/otel-merchant-portal-application-instrumentation:^0.1.0")
+# Check if the yq command is available
+if ! command -v yq &> /dev/null; then
+  echo "Error: 'yq' command not found. Please install it before running this script. E.g. brew install yq"
+  exit 1
 fi
 
-if [ -f vendor/spryker/spryker-shop/Bundles/ShopApplication/src/SprykerShop/Yves/ShopApplication/Bootstrap/YvesBootstrap.php ] || [ -f vendor/spryker-shop/shop-application/src/SprykerShop/Yves/ShopApplication/Bootstrap/YvesBootstrap.php ] || [ -f "src/$project_namespace/Yves/ShopApplication/YvesBootstrap.php" ]; then
-    dependencies+=("spryker-shop/otel-shop-application-instrumentation:^0.1.0")
-fi
+yq -i '.image.tag = "volhovm/spryker-8.3-alpine-3.20"' "$DEPLOY_FILE"
+yq -i '.image.php.enabled-extensions += "opentelemetry"' "$DEPLOY_FILE"
+yq -i '.image.php.enabled-extensions += "grpc"' "$DEPLOY_FILE"
+yq -i '.image.php.enabled-extensions += "protobuf"' "$DEPLOY_FILE"
 
-for dependency in "${dependencies[@]}"; do
-  package_name=$(echo "$dependency" | cut -d':' -f1)
-  package_version=$(echo "$dependency" | cut -d':' -f2)
-
-  jq --arg package "$package_name" --arg version "$package_version" '.require[$package] = $version' composer.json > composer.json.tmp && mv composer.json.tmp composer.json
-done
-
-# Ensure 'autoload' exists and is an object
-jq 'if .autoload == null then .autoload = {} else . end' composer.json > composer.json.tmp && mv composer.json.tmp composer.json
-
-# Ensure 'autoload.files' exists and is an array
-jq 'if .autoload.files == null then .autoload.files = [] else . end' composer.json > composer.json.tmp && mv composer.json.tmp composer.json
-
-# Ensure 'autoload."psr-4"' exists and is an object
-jq 'if .autoload."psr-4" == null then .autoload."psr-4" = {} else . end' composer.json > composer.json.tmp && mv composer.json.tmp composer.json
-
-if ! jq -e '.autoload.files | any(. == "otel-autoload.php")' composer.json > /dev/null; then
-  # If not present, add it
-  jq '.autoload.files += ["otel-autoload.php"]' composer.json > composer.json.tmp && mv composer.json.tmp composer.json
-fi
-
-# Check if PSR-4 autoload entries already exist
-if ! jq -e '.autoload."psr-4" | has("OtelUpdater\\")' composer.json > /dev/null; then
-  jq '.autoload."psr-4" += {"OtelUpdater\\": "src/Otel/"}' composer.json > composer.json.tmp && mv composer.json.tmp composer.json
-fi
-
-if ! jq -e '.autoload."psr-4" | has("OpenTelemetry\\Contrib\\Instrumentation\\Symfony\\")' composer.json > /dev/null; then
-  jq '.autoload."psr-4" += {"OpenTelemetry\\Contrib\\Instrumentation\\Symfony\\": "src/"}' composer.json > composer.json.tmp && mv composer.json.tmp composer.json
-fi
+composer require "open-telemetry/sdk:^1.0" "ext-opentelemetry:*" "mismatch/opentelemetry-auto-redis:^0.3.0" "open-telemetry/exporter-otlp:^1.0" "open-telemetry/gen-otlp-protobuf:^1.1" "open-telemetry/opentelemetry-auto-guzzle:^0.0.2" "spryker/monitoring:^2.8.0" "open-telemetry/transport-grpc:^1.0" "ext-grpc:*" "spryker/opentelemetry:^1.1.0" "spryker/otel-elastica-instrumentation:^1.0.0" "spryker/otel-rabbit-mq-instrumentation:^1.0.0" "spryker/otel-propel-instrumentation:^1.0.0"
 
 if [ -f "src/$project_namespace/Service/Monitoring/MonitoringDependencyProvider.php" ]; then
     # Check if the getMonitoringExtensions method exists
@@ -147,4 +106,22 @@ use Spryker\\\\Zed\\\\Opentelemetry\\\\Communication\\\\Plugin\\\\Console\\\\Ope
     fi
 fi
 
-composer update
+
+# Path to the target YAML file
+INSTALL_FILE=${3:-"config/install/docker.yml"}
+
+# Check if the file exists
+if [[ ! -f "$INSTALL_FILE" ]]; then
+  echo "Error: File $INSTALL_FILE does not exist."
+  exit 1
+fi
+
+# Check if the yq command is available
+if ! command -v yq &> /dev/null; then
+  echo "Error: 'yq' command not found. Please install it before running this script. E.g. brew install yq"
+  exit 1
+fi
+
+# Add the new section under `sections.build`
+yq -i '.sections.build.generate-open-telemetry.command = "vendor/bin/console open-telemetry:generate"' "$INSTALL_FILE"
+
