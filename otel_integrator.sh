@@ -1,10 +1,10 @@
 #!/bin/bash
 
-# Prerequisites: jq tool should be installed in the system.
+# Prerequisites: yq tool should be installed in the system.
 
 project_namespace=${1:-Pyz}
 
-# Path to the target YAML file
+# Path to the target deploy YAML file
 DEPLOY_FILE=${2:-"deploy.yml"}
 
 # Check if the file exists
@@ -24,7 +24,7 @@ yq -i '.image.php.enabled-extensions += "opentelemetry"' "$DEPLOY_FILE"
 yq -i '.image.php.enabled-extensions += "grpc"' "$DEPLOY_FILE"
 yq -i '.image.php.enabled-extensions += "protobuf"' "$DEPLOY_FILE"
 
-composer require "open-telemetry/sdk:^1.0" "ext-opentelemetry:*" "mismatch/opentelemetry-auto-redis:^0.3.0" "open-telemetry/exporter-otlp:^1.0" "open-telemetry/gen-otlp-protobuf:^1.1" "open-telemetry/opentelemetry-auto-guzzle:^0.0.2" "spryker/monitoring:^2.8.0" "open-telemetry/transport-grpc:^1.0" "ext-grpc:*" "spryker/opentelemetry:^1.1.0" "spryker/otel-elastica-instrumentation:^1.0.0" "spryker/otel-rabbit-mq-instrumentation:^1.0.0" "spryker/otel-propel-instrumentation:^1.0.0"
+docker/sdk cli composer require "mismatch/opentelemetry-auto-redis:^0.3.0" "open-telemetry/opentelemetry-auto-guzzle:^0.0.2" "spryker/monitoring:^2.8.0" "spryker/opentelemetry:^1.1.0" "spryker/otel-elastica-instrumentation:^1.0.0" "spryker/otel-rabbit-mq-instrumentation:^1.0.0" "spryker/otel-propel-instrumentation:^1.0.0" --ignore-platform-reqs
 
 if [ -f "src/$project_namespace/Service/Monitoring/MonitoringDependencyProvider.php" ]; then
     # Check if the getMonitoringExtensions method exists
@@ -93,13 +93,13 @@ fi
 if [ -f "src/$project_namespace/Zed/Console/ConsoleDependencyProvider.php" ]; then
     # If the file exists, attempt to append the code to the $commands array
     if ! grep -q "OpentelemetryGeneratorConsole" "src/$project_namespace/Zed/Console/ConsoleDependencyProvider.php"; then
-            sed -i '/$commands = \[/a\
+            sed -i '' '/$commands = \[/a\
             new OpentelemetryGeneratorConsole(),
             ' "src/$project_namespace/Zed/Console/ConsoleDependencyProvider.php"
 
             # Add the use statement if it doesn't already exist
             if ! grep -q "use Spryker\\Zed\\Opentelemetry\\Communication\\Plugin\\Console\\OpentelemetryGeneratorConsole;" "src/$project_namespace/Zed/Console/ConsoleDependencyProvider.php"; then
-                sed -i "
+                sed -i '' "
                 /^namespace ${project_namespace//\\/\\\\}\\\\Zed\\\\Console;/a\\
 use Spryker\\\\Zed\\\\Opentelemetry\\\\Communication\\\\Plugin\\\\Console\\\\OpentelemetryGeneratorConsole;" "src/$project_namespace/Zed/Console/ConsoleDependencyProvider.php"
             fi
@@ -125,3 +125,6 @@ fi
 # Add the new section under `sections.build`
 yq -i '.sections.build.generate-open-telemetry.command = "vendor/bin/console open-telemetry:generate"' "$INSTALL_FILE"
 
+
+
+echo "All done! Review your changes before pushing to other envs. Run docker/sdk boot $DEPLOY_FILE first if you want to check everything locally in order to enable required extensions"
