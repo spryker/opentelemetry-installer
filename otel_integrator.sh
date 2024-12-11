@@ -237,7 +237,7 @@ use Spryker\\\\Zed\\\\Opentelemetry\\\\Communication\\\\Plugin\\\\Console\\\\Ope
 adjustDeployFile "$IMAGE_FILE"
 adjustInstallFile "$INSTALL_FILE"
 registerPlugins
-#installDependencies "$DEPLOY_FILE"
+installDependencies "$DEPLOY_FILE"
 
 # Final message
 echo "All tasks completed successfully. Please review your changes before deploying to other environments."
