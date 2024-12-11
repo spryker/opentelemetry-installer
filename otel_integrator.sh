@@ -116,7 +116,7 @@ adjustInstallFile() {
   fi
 
   cmd=( -i -I4 '.sections.build.generate-open-telemetry.command = "vendor/bin/console open-telemetry:generate"' "$installFile" )
-  echo "Execution command: docker run --rm -v $currentDir:/workdir mikefarah/yq ${cmd[@]}"
+  echo "Execution command: docker run --rm -v $currentDir:/workdir mikefarah/yq --no-doc --indent 2 ${cmd[@]}"
   docker run --rm -v "$currentDir:/workdir" mikefarah/yq "${cmd[@]}"
   check_status $? "Failed to adjust install file: $installFile"
   echo "Install file updated successfully."
@@ -127,7 +127,7 @@ adjustDeployFile() {
     local currentDir
     currentDir=$(pwd)
     cmd=( -i -I4 '.image.tag = "'$BASE_IMAGE'" | .image.php.enabled-extensions |= (.|select(. != null) + ["opentelemetry", "grpc", "protobuf"] | unique) // ["opentelemetry", "grpc", "protobuf"]' "$deployFile" )
-    echo "Execution command: docker run --rm -v $currentDir:/workdir mikefarah/yq ${cmd[@]}"
+    echo "Execution command: docker run --rm -v $currentDir:/workdir mikefarah/yq --no-doc --indent 2 ${cmd[@]}"
     docker run --rm -v "$currentDir:/workdir" mikefarah/yq "${cmd[@]}"
     check_status $? "Failed to adjust deploy file: $deployFile"
     echo "Deploy file updated successfully."
@@ -173,7 +173,7 @@ registerPlugins() {
 
             # If not present, add them to the return array
             runSedCommand '/        return \[/a\
-            \ \ \ \ \new OpentelemetryMonitoringExtensionPlugin(),
+            \ \ \ \ new OpentelemetryMonitoringExtensionPlugin(),
             ' src/$project_namespace/Service/Monitoring/MonitoringDependencyProvider.php
         fi
 
