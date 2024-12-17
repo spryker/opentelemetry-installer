@@ -5,7 +5,7 @@ PROJECT_NAMESPACE="Pyz"
 IMAGE_FILE=""
 INSTALL_FILE="config/install/docker.yml"
 DEPLOY_FILE="deploy.yml"
-BASE_IMAGE="volhovm/spryker-8.3-alpine-3.20"
+BASE_IMAGE="spryker/php:8.3-alpine3.20-otel"
 
 # Function to display help
 display_help() {
@@ -16,7 +16,7 @@ display_help() {
   echo "  --image-file <file>              Specify the image file that includes your PHP image information. You need to use it if your main deploy file doesn't have it (default: same as --deploy-file if not provided)"
   echo "  --install-file <file>            Path to the install configuration file. Will be updated with hook generator command. (default: config/install/docker.yml)"
   echo "  --deploy-file <file>             Path to the deploy configuration file. If --image-file is not provided this file will be used both for PHP image update and for booting application. If --image-file is provided, only to boot application. (default: deploy.yml)"
-  echo "  --base-image <image>             Base PHP Docker image. Image MUST be built with all required extensions. (default: volhovm/spryker-8.3-alpine-3.20)"
+  echo "  --base-image <image>             Base PHP Docker image. Image MUST be built with all required extensions. (default: spryker/php:8.3-alpine3.20-otel)"
   echo "  --help                           Display this help message"
   echo ""
   echo "Example:"
