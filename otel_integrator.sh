@@ -146,13 +146,8 @@ installDependencies() {
 
     # Install required dependencies
     docker/sdk cli composer require \
-      "mismatch/opentelemetry-auto-redis:^0.3.0" \
-      "open-telemetry/opentelemetry-auto-guzzle:^0.0.2" \
-      "spryker/monitoring:^2.8.0" \
-      "spryker/opentelemetry:^1.1.0" \
-      "spryker/otel-elastica-instrumentation:^1.0.0" \
-      "spryker/otel-rabbit-mq-instrumentation:^1.0.0" \
-      "spryker/otel-propel-instrumentation:^1.0.0" --ignore-platform-reqs
+      "spryker/monitoring:^2.9.0" \
+      "spryker/opentelemetry:^1.4.0" --ignore-platform-reqs
     check_status $? "Failed to install required dependencies."
 }
 
