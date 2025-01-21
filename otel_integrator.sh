@@ -147,7 +147,7 @@ installDependencies() {
     # Install required dependencies
     docker/sdk cli composer require \
       "spryker/monitoring:^2.9.0" \
-      "spryker/opentelemetry:^1.4.0" --ignore-platform-reqs
+      "spryker/opentelemetry:^1.5.0" --ignore-platform-reqs
     check_status $? "Failed to install required dependencies."
 }
 
