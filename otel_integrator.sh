@@ -7,6 +7,14 @@ INSTALL_FILE="config/install/docker.yml"
 DEPLOY_FILE="deploy.yml"
 BASE_IMAGE="spryker/php:8.3-alpine3.20-otel"
 
+LATEST_INSTRUMENTATION_VERSION=$(curl --silent "https://api.github.com/repos/spryker/opentelemetry/releases/latest" \
+      | grep '"tag_name"' \
+      | sed -E 's/.*"([^"]+)".*/\1/')
+
+LATEST_MONITORING_VERSION=$(curl --silent "https://api.github.com/repos/spryker/monitoring/releases/latest" \
+      | grep '"tag_name"' \
+      | sed -E 's/.*"([^"]+)".*/\1/')
+
 # Function to display help
 display_help() {
   echo "Usage: $0 [options]"
@@ -78,6 +86,8 @@ echo "Image File: $IMAGE_FILE"
 echo "Install File: $INSTALL_FILE"
 echo "Deploy File: $DEPLOY_FILE"
 echo "PHP Image: $BASE_IMAGE"
+echo "Instrumentation version: ${LATEST_INSTRUMENTATION_VERSION}"
+echo "Monitoring Version: ${LATEST_MONITORING_VERSION}"
 echo "======================"
 
 # Ask for confirmation
@@ -146,8 +156,8 @@ installDependencies() {
 
     # Install required dependencies
     docker/sdk cli composer require \
-      "spryker/monitoring:^2.9.0" \
-      "spryker/opentelemetry:^1.5.0" --ignore-platform-reqs
+      "spryker/monitoring:^${LATEST_MONITORING_VERSION}" \
+      "spryker/opentelemetry:^${LATEST_INSTRUMENTATION_VERSION}" --ignore-platform-reqs
     check_status $? "Failed to install required dependencies."
 }
 
