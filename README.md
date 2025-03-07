@@ -44,7 +44,7 @@ Example installation via Homebrew:
 
   Example:
 
-      ./otel_integrator.sh --project-namespace  Pyz --deploy-file deploy.yml --deploy-file deploy.yml
+      ./otel_integrator.sh --project-namespace  Pyz --deploy-file deploy.yml 
 
 The script will modify the specified files as needed to integrate OpenTelemetry.
 
