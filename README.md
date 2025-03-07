@@ -36,11 +36,16 @@ Example installation via Homebrew:
 
 - Copy the otel_integrator.sh script to the root directory of your project:
 
-- Run the script with the required parameters (or use defaults):
-./otel_integrator.sh --project-namespace [PROJECT_NAMESPACE] --deploy-file [DEPLOY_FILE_NAME] --install-file [INSTALL_SCRIPT_NAME]
-Example:
+  - Run the script with the required parameters (or use defaults):
+    
 
-./otel_integrator.sh Pyz deploy.yml --deploy-file docker.dev.yml
+      ./otel_integrator.sh --project-namespace [PROJECT_NAMESPACE] --deploy-file [DEPLOY_FILE_NAME] --install-file [INSTALL_SCRIPT_NAME]
+  
+
+  Example:
+
+      ./otel_integrator.sh --project-namespace  Pyz --deploy-file deploy.yml --deploy-file deploy.yml
+
 The script will modify the specified files as needed to integrate OpenTelemetry.
 
 ### Post-Script Review
