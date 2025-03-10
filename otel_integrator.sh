@@ -272,6 +272,6 @@ installDependencies "$DEPLOY_FILE"
 echo ""
 echo "All tasks completed successfully. Please review your changes before deploying to other environments.
 
-If you want to validate instrumentation locally, it is required activate it via environment variables as described in documentation:
+If you want to validate instrumentation locally, you are required to activate it via environment variables as described in the documentation:
 
 https://github.com/spryker/spryker-docs/blob/feature/opentelemetry-documentation/docs/dg/dev/backend-development/opentelemetry/overview.md"
