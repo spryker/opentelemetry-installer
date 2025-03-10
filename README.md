@@ -42,7 +42,7 @@ The otel_integrator.sh script automates the integration of OpenTelemetry into a 
 
   Example:
 
-      ./otel_integrator.sh --project-namespace  Pyz --deploy-file deploy.yml 
+      ./otel_integrator.sh --project-namespace  Pyz --deploy-file deploy.dev..yml 
 
 The script will modify the specified files as needed to integrate OpenTelemetry.
 
