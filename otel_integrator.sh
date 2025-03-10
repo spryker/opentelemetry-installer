@@ -168,6 +168,11 @@ upApplication() {
     docker/sdk up --build
 }
 
+stopApplication() {
+    docker/sdk stop
+    check_status $? "Failed to stop the application"
+}
+
 installDependencies() {
     # Install required dependencies
     docker/sdk cli composer require \
@@ -267,6 +272,7 @@ adjustInstallFile "$INSTALL_FILE"
 registerPlugins
 upApplication  "$DEPLOY_FILE"
 installDependencies "$DEPLOY_FILE"
+stopApplication
 
 # Final message
 echo ""
