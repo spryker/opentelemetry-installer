@@ -27,10 +27,8 @@ The otel_integrator.sh script automates the integration of OpenTelemetry into a 
     - Allows you to specify your custom PHP image to use. Make sure that it has required extensions ("opentelemetry", "grpc", "protobuf") included.
 
 ### Prerequisites
-yq Tool:
-Ensure the yq tool is installed on your system.
-Example installation via Homebrew:
-`brew install yq`
+
+- docker
 
 ### Execution Steps
 
