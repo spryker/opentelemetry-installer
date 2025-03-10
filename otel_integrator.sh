@@ -168,11 +168,6 @@ upApplication() {
     docker/sdk up --build
 }
 
-generateInstrumentation() {
-  docker/sdk cli vendor/bin/console open-telemetry:generate
-  check_status $? "Failed to run  command: vendor/bin/console open-telemetry:generate"
-}
-
 installDependencies() {
     # Install required dependencies
     docker/sdk cli composer require \
@@ -268,11 +263,15 @@ use Spryker\\\\Zed\\\\Opentelemetry\\\\Communication\\\\Plugin\\\\Console\\\\Ope
 
 # Apply adjustments
 adjustDeployFile "$IMAGE_FILE"
-upApplication  "$DEPLOY_FILE"
-installDependencies "$DEPLOY_FILE"
 adjustInstallFile "$INSTALL_FILE"
 registerPlugins
-generateInstrumentation
+upApplication  "$DEPLOY_FILE"
+installDependencies "$DEPLOY_FILE"
 
 # Final message
-echo "All tasks completed successfully. Please review your changes before deploying to other environments."
+echo ""
+echo "All tasks completed successfully. Please review your changes before deploying to other environments.
+
+If you want to validate instrumentation locally, it is required activate it via environment variables as described in documentation:
+
+https://github.com/spryker/spryker-docs/blob/feature/opentelemetry-documentation/docs/dg/dev/backend-development/opentelemetry/overview.md"
