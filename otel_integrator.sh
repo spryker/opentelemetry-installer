@@ -15,6 +15,10 @@ LATEST_MONITORING_VERSION=$(curl --silent "https://api.github.com/repos/spryker/
       | grep '"tag_name"' \
       | sed -E 's/.*"([^"]+)".*/\1/')
 
+LATEST_MONITORING_EXTENSION_VERSION=$(curl --silent "https://api.github.com/repos/spryker/monitoring-extension/releases/latest" \
+      | grep '"tag_name"' \
+      | sed -E 's/.*"([^"]+)".*/\1/')
+
 # Function to display help
 display_help() {
   echo "Usage: $0 [options]"
@@ -88,6 +92,7 @@ echo "Deploy File: $DEPLOY_FILE"
 echo "PHP Image: $BASE_IMAGE"
 echo "Instrumentation version: ${LATEST_INSTRUMENTATION_VERSION}"
 echo "Monitoring Version: ${LATEST_MONITORING_VERSION}"
+echo "Monitoring Extension Version: ${LATEST_MONITORING_EXTENSION_VERSION}"
 echo "======================"
 
 # Ask for confirmation
@@ -149,15 +154,32 @@ adjustDeployFile() {
     echo "Deploy file updated successfully."
 }
 
-installDependencies() {
+upApplication() {
     # Boot the Docker SDK
     docker/sdk boot "$DEPLOY_FILE"
     check_status $? "Failed to boot the SDK with deploy file: $DEPLOY_FILE"
+    # Ask for confirmation
+    read -p "Did you run docker/sdk up for this local shop before? (yes/no): " confirm
+    if [[ "$confirm" == "yes" ]]; then
+      echo "Application build skipped. If you face issues related to the container CLI pulling during the next steps, rerun the script and answer ‘no’."
+      return
+    fi
+    echo "Building whole application..."
+    docker/sdk up --build
+}
 
+stopApplication() {
+    docker/sdk stop
+    check_status $? "Failed to stop the application"
+}
+
+installDependencies() {
     # Install required dependencies
     docker/sdk cli composer require \
       "spryker/monitoring:^${LATEST_MONITORING_VERSION}" \
-      "spryker/opentelemetry:^${LATEST_INSTRUMENTATION_VERSION}" --ignore-platform-reqs
+      "spryker/opentelemetry:^${LATEST_INSTRUMENTATION_VERSION}" \
+      "spryker/monitoring-extension:^${LATEST_MONITORING_EXTENSION_VERSION} " --ignore-platform-reqs
+
     check_status $? "Failed to install required dependencies."
 }
 
@@ -248,7 +270,14 @@ use Spryker\\\\Zed\\\\Opentelemetry\\\\Communication\\\\Plugin\\\\Console\\\\Ope
 adjustDeployFile "$IMAGE_FILE"
 adjustInstallFile "$INSTALL_FILE"
 registerPlugins
+upApplication  "$DEPLOY_FILE"
 installDependencies "$DEPLOY_FILE"
+stopApplication
 
 # Final message
-echo "All tasks completed successfully. Please review your changes before deploying to other environments."
+echo ""
+echo "All tasks completed successfully. Please review your changes before deploying to other environments.
+
+If you want to validate instrumentation locally, you are required to activate it via environment variables as described in the documentation:
+
+https://github.com/spryker/spryker-docs/blob/feature/opentelemetry-documentation/docs/dg/dev/backend-development/opentelemetry/overview.md"
