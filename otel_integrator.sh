@@ -280,4 +280,4 @@ echo "All tasks completed successfully. Please review your changes before deploy
 
 If you want to validate instrumentation locally, you are required to activate it via environment variables as described in the documentation:
 
-https://github.com/spryker/spryker-docs/blob/feature/opentelemetry-documentation/docs/dg/dev/backend-development/opentelemetry/overview.md"
+https://docs.spryker.com/docs/ca/dev/monitoring/spryker-monitoring-integration/opentelemetry-instrumentation.html"
