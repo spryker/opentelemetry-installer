@@ -24,7 +24,7 @@ The otel_integrator.sh script automates the integration of OpenTelemetry into a 
 
 - --base-image:
     - Default: spryker/php:8.3-alpine3.20-otel
-    - Allows you to specify your custom PHP image to use. Make sure that it has required extensions ("opentelemetry", "grpc", "protobuf") included.
+    - Allows you to specify your custom PHP image to use. Make sure that it has required extension ("otel", "protobuf") included.
 
 ### Prerequisites
 
@@ -52,7 +52,7 @@ After running the script:
 
 - Verify the Deploy File:
     - Review changes in the deploy (image) file (deploy.yml by default) to ensure that required image is in use and all extensions are enabled.
-    - Confirm that the `blackfire` and `opentelemetry` extensions are not enabled simultaneously.
+    - Confirm that the `blackfire` and `otel` extensions are not enabled simultaneously.
 
 - Verify Install file:
     - Check that install file has required section to run `vendor/bin/console open-telemetry:generate` command.
