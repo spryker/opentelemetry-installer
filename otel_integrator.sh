@@ -5,7 +5,7 @@ PROJECT_NAMESPACE="Pyz"
 IMAGE_FILE=""
 INSTALL_FILE="config/install/docker.yml"
 DEPLOY_FILE="deploy.yml"
-BASE_IMAGE="spryker/php:8.3-alpine3.20-otel"
+BASE_IMAGE="spryker/php:8.3"
 
 LATEST_INSTRUMENTATION_VERSION=$(curl --silent "https://api.github.com/repos/spryker/opentelemetry/releases/latest" \
       | grep '"tag_name"' \
@@ -28,7 +28,7 @@ display_help() {
   echo "  --image-file <file>              Specify the image file that includes your PHP image information. You need to use it if your main deploy file doesn't have it (default: same as --deploy-file if not provided)"
   echo "  --install-file <file>            Path to the install configuration file. Will be updated with hook generator command. (default: config/install/docker.yml)"
   echo "  --deploy-file <file>             Path to the deploy configuration file. If --image-file is not provided this file will be used both for PHP image update and for booting application. If --image-file is provided, only to boot application. (default: deploy.yml)"
-  echo "  --base-image <image>             Base PHP Docker image. Image MUST be built with all required extensions. (default: spryker/php:8.3-alpine3.20-otel)"
+  echo "  --base-image <image>             Base PHP Docker image. Image MUST be built with all required extensions. (default: spryker/php:8.3)"
   echo "  --help                           Display this help message"
   echo ""
   echo "Example:"
@@ -141,7 +141,7 @@ adjustDeployFile() {
     local deployFile="$1"
     local currentDir
     currentDir=$(pwd)
-    cmd=( -i -I4 '.image.tag = "'$BASE_IMAGE'" | .image.php.enabled-extensions |= (.|select(. != null) + ["opentelemetry", "grpc", "protobuf"] | unique) // ["opentelemetry", "grpc", "protobuf"]' "$deployFile" )
+    cmd=( -i -I4 '.image.tag = "'$BASE_IMAGE'" | .image.php.enabled-extensions |= (.|select(. != null) + ["otel", "protobuf"] | unique) // ["otel", "protobuf"]' "$deployFile" )
 
     if [[ ! -f "$deployFile" ]]; then
       echo "Error: File $deployFile does not exist."
