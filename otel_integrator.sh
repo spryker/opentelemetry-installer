@@ -141,7 +141,7 @@ adjustDeployFile() {
     local deployFile="$1"
     local currentDir
     currentDir=$(pwd)
-    cmd=( -i -I4 '.image.tag = "'$BASE_IMAGE'" | .image.php.enabled-extensions |= (.|select(. != null) + ["otel", "protobuf"] | unique) // ["otel", "protobuf"]' "$deployFile" )
+    cmd=( -i -I4 '.image.tag = "'$BASE_IMAGE'" | .image.php.enabled-extensions |= (.|select(. != null) + ["otel"] | unique) // ["otel"]' "$deployFile" )
 
     if [[ ! -f "$deployFile" ]]; then
       echo "Error: File $deployFile does not exist."

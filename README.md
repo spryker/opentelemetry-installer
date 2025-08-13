@@ -1,5 +1,7 @@
 This guide explains how to use the installer script to integrate OpenTelemetry into your project.
 
+> **Note:** This integrator is required for legacy shop versions only. Starting from the latest release, this integration is no longer needed and can be omitted.
+
 ### Script Overview
 
 The otel_integrator.sh script automates the integration of OpenTelemetry into a project. It updates deploy and install files, wires required plugins and install required packages.
@@ -23,8 +25,8 @@ The otel_integrator.sh script automates the integration of OpenTelemetry into a 
     - Specifies the install configuration file to update. This is needed in order to re-generate hook files on each install/deploy.
 
 - --base-image:
-    - Default: spryker/php:8.3-alpine3.20-otel
-    - Allows you to specify your custom PHP image to use. Make sure that it has required extension ("otel", "protobuf") included.
+    - Default: spryker/php:8.3
+    - Allows you to specify your custom PHP image to use. Make sure that it has required extensions ("otel", "grpc", "protobuf") included.
 
 ### Prerequisites
 
